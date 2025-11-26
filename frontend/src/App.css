@@ -178,15 +178,32 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Gradient Button */
+/* Professional Trading Button - Flat & High Contrast */
 .gradient-button {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
-  transition: all 0.3s ease;
+  background: #2962FF;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: background-color 0.2s ease;
+  box-shadow: none;
+  border: none;
 }
 
 .gradient-button:hover {
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-  transform: translateY(-1px);
+  background: #1E4FCC;
+  box-shadow: none;
+  transform: none;
+}
+
+.gradient-button:focus {
+  outline: 2px solid #2962FF;
+  outline-offset: 2px;
+}
+
+.gradient-button:active {
+  background: #1640A6;
 }
 
 /* Chart Container */
