@@ -28,36 +28,6 @@ This project is a web application for performing historical backtesting of stock
             - Maximum Drawdown
             - Sharpe Ratio
 
-## Technology Stack
-
-- **Frontend:**
-    - React (using Vite)
-    - Material-UI (MUI): Used for building user interface components.
-    - Plotly.js (via `react-plotly.js`): Used for rendering interactive charts.
-    - Axios (or `fetch`): Used for handling API requests.
-- **Backend (inferred):**
-    - Python (e.g., Flask or FastAPI framework)
-    - Pandas: Used for data processing and analysis.
-    - yfinance or other stock data APIs: Used for fetching historical stock price data.
-
-## Current Status
-
-- **Frontend:**
-    - User interface (UI) development is complete, including parameter input forms and results display sections.
-    - Chart functionality is implemented, including logarithmic scale toggle.
-    - All performance metrics are correctly displayed on the results page.
-    - API integration is complete, allowing backtest parameters to be sent to the backend and receiving calculation results.
-    - Basic error handling mechanisms and loading state indicators have been implemented.
-    - Through multiple iterations, user interface details have been continuously optimized to enhance user experience and visual effects.
-- **Backend (inferred from frontend interactions):**
-    - API endpoints should be established to receive parameters sent from the frontend.
-    - Capable of fetching corresponding historical stock data based on input parameters.
-    - Portfolio value calculation logic has been implemented.
-    - Rebalancing logic has been implemented (supporting monthly, quarterly, annual, and other frequencies).
-    - Benchmark index comparison calculation logic has been implemented.
-    - Various performance metrics (total return, annualized return, maximum drawdown, Sharpe ratio) calculation functions have been implemented.
-    - Capable of returning calculation results to the frontend in the specified format.
-
 ## Future Outlook
 
 - Add individual asset performance lists within the portfolio.
