@@ -5,6 +5,7 @@ from typing import List, Optional, Dict, Any
 import yfinance as yf
 import pandas as pd
 from datetime import date
+from thestrat import get_multi_timeframe_data
 
 app = FastAPI()
 
@@ -369,6 +370,44 @@ async def portfolio_buy_and_hold_backtest(request: PortfolioBacktestRequest):
         portfolio_performance=portfolio_performance_metrics,
         benchmark_performance=benchmark_performance_metrics
     )
+
+
+# --- TheStrat Multi-Timeframe Endpoint ---
+class TheStratRequest(BaseModel):
+    ticker: str = Field(..., description="Stock ticker symbol")
+    start_date: date = Field(..., description="Start date for analysis")
+    end_date: date = Field(..., description="End date for analysis")
+    timeframes: Optional[List[str]] = Field(
+        None, 
+        description="List of timeframes (e.g., ['2d', '3d', '10d', '2w', '5w', '10w'])"
+    )
+
+    @validator('end_date')
+    def end_date_must_be_after_start_date(cls, v, values):
+        if 'start_date' in values and v <= values['start_date']:
+            raise ValueError("End date must be after start date")
+        return v
+
+
+@app.post("/api/thestrat")
+async def analyze_thestrat(request: TheStratRequest) -> Dict[str, Any]:
+    """
+    Analyze stock using TheStrat methodology with multiple timeframes.
+    Returns OHLCV data and pattern detection for each timeframe.
+    """
+    try:
+        result = get_multi_timeframe_data(
+            ticker=request.ticker,
+            start_date=str(request.start_date),
+            end_date=str(request.end_date),
+            timeframes=request.timeframes
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
 
 # 如果你想直接運行這個 FastAPI 應用 (例如使用 uvicorn main:app --reload)
 # if __name__ == "__main__":

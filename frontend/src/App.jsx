@@ -1,94 +1,39 @@
-import { useState } from 'react'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import './App.css'
-import BacktestForm from './components/BacktestForm'
-import ResultsDisplay from './components/ResultsDisplay'
-import { submitBacktest } from './services/api'
+import BacktestPage from './pages/BacktestPage'
+import TheStratPage from './pages/TheStratPage'
 
 function App() {
-  const [backtestResults, setBacktestResults] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
-
-  const handleBacktestSubmit = async (formData) => {
-    setIsLoading(true)
-    setError(null)
-    setBacktestResults(null)
-    console.log("Form Data Submitted: ", formData) // 測試用
-
-    try {
-      const results = await submitBacktest(formData)
-      setBacktestResults(results)
-    } catch (err) {
-      setError(err.message || '回測時發生未知錯誤，請檢查控制台以獲取更多資訊。')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      minHeight: '100vh',
-      bgcolor: '#f5f5f5'
-    }}>
-      <Container maxWidth={false} sx={{ 
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        py: 4,
-        px: 2,
-        maxWidth: '1400px',
-        mx: 'auto'
-      }}>
-
-        <Box sx={{ 
-          display: 'flex', 
-          flex: 1,
-          gap: 1
-        }}>
-          {/* 左側：輸入表單 */}
-          <Paper sx={{ 
-            width: '200px',
-            p: 2,
-            height: 'fit-content'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-              Settings
+    <Router>
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Stock Analysis System
             </Typography>
-            <BacktestForm onSubmit={handleBacktestSubmit} isLoading={isLoading} />
-          </Paper>
+            <Button color="inherit" component={Link} to="/">
+              Portfolio Backtest
+            </Button>
+            <Button color="inherit" component={Link} to="/thestrat">
+              TheStrat Analysis
+            </Button>
+          </Toolbar>
+        </AppBar>
 
-          {/* 右側：結果展示 */}
-          <Paper sx={{ 
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'auto'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', p: 2, pb: 1 }}>
-              Results
-            </Typography>
-            {isLoading && <Typography sx={{ p: 2 }}>Loading...</Typography>}
-            {error && <Typography color="error" sx={{ p: 2 }}>Error: {error}</Typography>}
-            
-            {!isLoading && !error && backtestResults && 
-              <ResultsDisplay results={backtestResults} />
-            }
-            {!isLoading && !error && !backtestResults && (
-                <Typography variant="body1" color="textSecondary" sx={{textAlign: 'center', mt: 2, p: 2}}>
-                    (Please set parameters and start backtest)
-                </Typography>
-            )}
-          </Paper>
+        <Box sx={{ flex: 1 }}>
+          <Routes>
+            <Route path="/" element={<BacktestPage />} />
+            <Route path="/thestrat" element={<TheStratPage />} />
+          </Routes>
         </Box>
-      </Container>
-    </Box>
+      </Box>
+    </Router>
   )
 }
 
