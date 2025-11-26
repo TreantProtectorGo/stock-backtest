@@ -33,31 +33,33 @@ function BacktestPage() {
     <Box sx={{ 
       minHeight: 'calc(100vh - 64px)',
       bgcolor: 'background.default',
-      py: 4
+      py: 1.5,
+      px: 1.5
     }}>
-      <Container maxWidth="xl">
-        <Box sx={{ display: 'flex', gap: 3 }}>
+      <Container maxWidth={false} sx={{ maxWidth: '100%', px: 0 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           {/* Sidebar */}
           <Paper 
             elevation={0}
             sx={{ 
-              width: '320px',
+              width: '280px',
               height: 'fit-content',
-              p: 3,
+              p: 2,
               borderRadius: 2,
               border: '1px solid',
               borderColor: 'divider',
               position: 'sticky',
-              top: 24,
+              top: 12,
             }}
           >
             <Typography 
               variant="h6" 
               gutterBottom 
               sx={{ 
-                mb: 3,
+                mb: 2,
                 fontWeight: 700,
                 color: 'text.primary',
+                fontSize: '1rem',
               }}
             >
               Backtest Settings
@@ -70,7 +72,7 @@ function BacktestPage() {
             <Paper 
               elevation={0}
               sx={{ 
-                minHeight: '600px',
+                minHeight: 'calc(100vh - 88px)',
                 borderRadius: 2,
                 border: '1px solid',
                 borderColor: 'divider',

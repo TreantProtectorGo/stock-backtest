@@ -195,31 +195,33 @@ function TheStratPage() {
       <Box sx={{ 
         minHeight: 'calc(100vh - 64px)',
         bgcolor: 'background.default',
-        py: 4
+        py: 1.5,
+        px: 1.5
       }}>
-        <Container maxWidth="xl">
-          <Box sx={{ display: 'flex', gap: 3 }}>
+        <Container maxWidth={false} sx={{ maxWidth: '100%', px: 0 }}>
+          <Box sx={{ display: 'flex', gap: 1 }}>
             {/* Sidebar */}
             <Paper 
               elevation={0}
               sx={{ 
-                width: '320px', 
-                p: 3, 
+                width: '280px', 
+                p: 2, 
                 height: 'fit-content',
                 borderRadius: 2,
                 border: '1px solid',
                 borderColor: 'divider',
                 position: 'sticky',
-                top: 24,
+                top: 12,
               }}
             >
               <Typography 
                 variant="h6" 
                 gutterBottom 
                 sx={{ 
-                  mb: 3,
+                  mb: 2,
                   fontWeight: 700,
                   color: 'text.primary',
+                  fontSize: '1rem',
                 }}
               >
                 TheStrat Analysis
@@ -260,11 +262,11 @@ function TheStratPage() {
                 }}
               />
 
-              <FormControl component="fieldset" sx={{ mb: 3 }}>
+              <FormControl component="fieldset" sx={{ mb: 2 }}>
                 <FormLabel 
                   component="legend" 
                   sx={{ 
-                    mb: 1.5, 
+                    mb: 1, 
                     fontWeight: 600,
                     fontSize: '0.875rem',
                     color: 'text.primary'
@@ -313,8 +315,8 @@ function TheStratPage() {
               <Paper 
                 elevation={0}
                 sx={{ 
-                  minHeight: '600px',
-                  p: 3,
+                  minHeight: 'calc(100vh - 88px)',
+                  p: 2,
                   borderRadius: 2,
                   border: '1px solid',
                   borderColor: 'divider',

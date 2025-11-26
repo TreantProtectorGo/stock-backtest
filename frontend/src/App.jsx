@@ -78,8 +78,8 @@ function NavBar() {
         borderColor: 'divider',
       }}
     >
-      <Container maxWidth="xl">
-        <Toolbar sx={{ px: { xs: 0 } }}>
+      <Container maxWidth={false} sx={{ maxWidth: '100%', px: 1.5 }}>
+        <Toolbar sx={{ px: 0, minHeight: 64 }}>
           <TrendingUpIcon sx={{ mr: 1.5, color: 'primary.main', fontSize: 28 }} />
           <Typography 
             variant="h6" 

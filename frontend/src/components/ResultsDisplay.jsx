@@ -179,7 +179,7 @@ const ResultsDisplay = ({ results }) => {
           variant="h6" 
           gutterBottom 
           sx={{ 
-            mb: 3, 
+            mb: 2, 
             fontWeight: 700,
             color: isPrimary ? 'primary.main' : 'text.secondary',
             fontSize: '1rem',
@@ -189,7 +189,7 @@ const ResultsDisplay = ({ results }) => {
         >
           {title}
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={1.5}>
           <Grid item xs={12} sm={6} md={4}>
             <StatCard 
               label="Final Value" 
@@ -233,7 +233,7 @@ const ResultsDisplay = ({ results }) => {
   }
 
   return (
-    <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
       {plotData.length > 0 && (
         <Box className="chart-container" sx={{ position: 'relative' }}>
           <Box sx={{ height: '450px' }}>
@@ -275,7 +275,7 @@ const ResultsDisplay = ({ results }) => {
       {portfolio_performance && renderPerformanceStats('Portfolio Performance', portfolio_performance, true)}
       
       {benchmark_performance && (
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 1 }}>
           {renderPerformanceStats('Benchmark Performance', benchmark_performance)}
         </Box>
       )}
