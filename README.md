@@ -1,69 +1,69 @@
-# 股票回測系統
+# Stock Backtesting System
 
-本專案為一網頁應用程式，用於進行股票投資組合的歷史回測。使用者可以設定投資組合中的股票種類、各股票權重、初始投資金額、回測的起始與結束日期，並可選擇一個基準指數進行績效比較。
+This project is a web application for performing historical backtesting of stock portfolios. Users can configure the types of stocks in their portfolio, the weight of each stock, the initial investment amount, the start and end dates for backtesting, and select a benchmark index for performance comparison.
 
-## 主要功能
+## Key Features
 
-- **投資組合設定：**
-    - 最多可新增 5 支股票。
-    - 設定每支股票的投資權重（以百分比表示）。
-    - 設定初始投資金額。
-    - 設定回測的起始日期與結束日期。
-- **再平衡策略：**
-    - 提供多種再平衡頻率選項（例如：每月、每季、每年，或不進行再平衡）。
-- **基準比較：**
-    - 使用者可輸入基準股票代號（例如：SPY），以便將投資組合表現與市場基準進行比較。
-- **回測執行：**
-    - 點擊「開始回測」按鈕，系統會將設定參數提交至後端進行運算。
-- **結果展示：**
-    - **圖表顯示：**
-        - 以折線圖呈現投資組合價值隨時間的變化趨勢。
-        - 若已設定基準，圖表將同時展示基準的價值變化。
-        - 提供線性及對數（Log Scale）兩種座標尺度切換功能，方便使用者從不同角度觀察增長趨勢。
-    - **績效指標卡片：**
-        - 分別展示投資組合及基準的詳細績效數據，包含：
-            - 最終價值 (Final Value)
-            - 總回報率 (Total Return)
-            - 年化回報率 (Annualized Return)
-            - 最大回撤 (Maximum Drawdown)
-            - 夏普比率 (Sharpe Ratio)
+- **Portfolio Configuration:**
+    - Add up to 5 stocks.
+    - Set the investment weight for each stock (as a percentage).
+    - Set the initial investment amount.
+    - Set the start and end dates for backtesting.
+- **Rebalancing Strategy:**
+    - Provides multiple rebalancing frequency options (e.g., monthly, quarterly, annually, or no rebalancing).
+- **Benchmark Comparison:**
+    - Users can enter a benchmark ticker symbol (e.g., SPY) to compare portfolio performance against a market benchmark.
+- **Backtest Execution:**
+    - Click the "Start Backtest" button, and the system will submit the configuration parameters to the backend for processing.
+- **Results Display:**
+    - **Chart Visualization:**
+        - Displays the portfolio value over time as a line chart.
+        - If a benchmark is set, the chart will also show the benchmark's value changes.
+        - Provides toggle functionality between linear and logarithmic (Log Scale) coordinate scales, allowing users to observe growth trends from different perspectives.
+    - **Performance Metrics Cards:**
+        - Displays detailed performance metrics for both the portfolio and benchmark, including:
+            - Final Value
+            - Total Return
+            - Annualized Return
+            - Maximum Drawdown
+            - Sharpe Ratio
 
-## 技術堆疊
+## Technology Stack
 
-- **前端：**
-    - React (使用 Vite)
-    - Material-UI (MUI)：用於建構使用者介面組件。
-    - Plotly.js (透過 `react-plotly.js`)：用於繪製互動式圖表。
-    - Axios (或 `fetch`)：用於處理 API 請求。
-- **後端 (推測)：**
-    - Python (例如：Flask 或 FastAPI 框架)
-    - Pandas：用於資料處理與分析。
-    - yfinance 或其他股票數據 API：用於獲取歷史股價資料。
+- **Frontend:**
+    - React (using Vite)
+    - Material-UI (MUI): Used for building user interface components.
+    - Plotly.js (via `react-plotly.js`): Used for rendering interactive charts.
+    - Axios (or `fetch`): Used for handling API requests.
+- **Backend (inferred):**
+    - Python (e.g., Flask or FastAPI framework)
+    - Pandas: Used for data processing and analysis.
+    - yfinance or other stock data APIs: Used for fetching historical stock price data.
 
-## 目前狀態
+## Current Status
 
-- **前端：**
-    - 使用者介面 (UI) 已開發完成，包含參數輸入表單及結果展示區塊。
-    - 圖表功能已實現，包含對數尺度切換。
-    - 各項績效指標能正確顯示於結果頁面。
-    - 已完成 API 串接，能將回測參數發送至後端並接收運算結果。
-    - 已實作基本的錯誤處理機制及載入狀態提示。
-    - 經過多次迭代，持續優化使用者介面細節，提升使用者體驗與視覺效果。
-- **後端 (根據前端互動推測)：**
-    - 應已建置 API 端點，用以接收前端傳送的參數。
-    - 能夠根據傳入參數，獲取對應的股票歷史數據。
-    - 已實現投資組合價值的計算邏輯。
-    - 已實現再平衡邏輯（支援每月、每季、每年等頻率）。
-    - 已實現與基準指數比較的相關計算邏輯。
-    - 已實現各項績效指標（總回報率、年化回報率、最大回撤、夏普比率）的計算功能。
-    - 能夠將計算結果依指定格式回傳至前端。
+- **Frontend:**
+    - User interface (UI) development is complete, including parameter input forms and results display sections.
+    - Chart functionality is implemented, including logarithmic scale toggle.
+    - All performance metrics are correctly displayed on the results page.
+    - API integration is complete, allowing backtest parameters to be sent to the backend and receiving calculation results.
+    - Basic error handling mechanisms and loading state indicators have been implemented.
+    - Through multiple iterations, user interface details have been continuously optimized to enhance user experience and visual effects.
+- **Backend (inferred from frontend interactions):**
+    - API endpoints should be established to receive parameters sent from the frontend.
+    - Capable of fetching corresponding historical stock data based on input parameters.
+    - Portfolio value calculation logic has been implemented.
+    - Rebalancing logic has been implemented (supporting monthly, quarterly, annual, and other frequencies).
+    - Benchmark index comparison calculation logic has been implemented.
+    - Various performance metrics (total return, annualized return, maximum drawdown, Sharpe ratio) calculation functions have been implemented.
+    - Capable of returning calculation results to the frontend in the specified format.
 
-## 未來展望
+## Future Outlook
 
-- 新增個別資產在投資組合中的表現列表。
-- 提供更詳細的交易日誌或重大事件記錄。
-- 開發更多樣化的再平衡策略選項。
-- 將交易成本與相關費用（例如：手續費）納入回測考量。
-- 擴充風險指標的計算（例如：Sortino Ratio, Calmar Ratio 等）。
-- 新增參數敏感性分析功能。
-- 開發使用者帳戶系統，提供回測歷史紀錄的儲存與查詢功能。 
+- Add individual asset performance lists within the portfolio.
+- Provide more detailed transaction logs or significant event records.
+- Develop more diverse rebalancing strategy options.
+- Incorporate trading costs and related fees (e.g., commissions) into backtesting considerations.
+- Expand risk metric calculations (e.g., Sortino Ratio, Calmar Ratio, etc.).
+- Add parameter sensitivity analysis functionality.
+- Develop a user account system to provide storage and query capabilities for backtesting history. 
