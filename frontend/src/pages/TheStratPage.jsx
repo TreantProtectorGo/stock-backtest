@@ -5,12 +5,14 @@ import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
+import Chip from '@mui/material/Chip'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -74,16 +76,14 @@ function TheStratPage() {
   }
 
   const getPatternColor = (pattern) => {
-    if (pattern === '1') return 'blue'
-    if (pattern === '3') return 'purple'
-    if (pattern === '2u') return 'green'
-    if (pattern === '2d') return 'red'
-    return 'gray'
+    if (pattern === '1') return '#2563eb'
+    if (pattern === '3') return '#7c3aed'
+    if (pattern === '2u') return '#10b981'
+    if (pattern === '2d') return '#ef4444'
+    return '#6b7280'
   }
 
   const renderChart = (timeframe, tfData) => {
-    const colors = tfData.patterns.map(p => getPatternColor(p))
-    
     const trace = {
       x: tfData.dates,
       open: tfData.open,
@@ -92,27 +92,25 @@ function TheStratPage() {
       close: tfData.close,
       type: 'candlestick',
       name: timeframe,
-      increasing: { line: { color: 'green' } },
-      decreasing: { line: { color: 'red' } },
-      marker: {
-        color: colors,
-        line: { width: 2 }
-      }
+      increasing: { line: { color: '#10b981', width: 1 } },
+      decreasing: { line: { color: '#ef4444', width: 1 } },
     }
 
     const layout = {
-      title: `${data.ticker} - ${timeframe.toUpperCase()} Chart`,
       xaxis: {
-        title: 'Date',
-        rangeslider: { visible: false }
+        rangeslider: { visible: false },
+        gridcolor: '#f3f4f6',
+        showline: false,
       },
       yaxis: {
-        title: 'Price'
+        gridcolor: '#f3f4f6',
+        showline: false,
       },
       height: 400,
-      margin: { t: 50, b: 50, l: 60, r: 30 },
-      paper_bgcolor: 'white',
-      plot_bgcolor: '#f9f9f9'
+      margin: { t: 40, b: 40, l: 60, r: 30 },
+      paper_bgcolor: '#ffffff',
+      plot_bgcolor: '#ffffff',
+      hovermode: 'x unified',
     }
 
     // Add pattern annotations
@@ -133,7 +131,9 @@ function TheStratPage() {
             size: 12,
             color: getPatternColor(pattern),
             weight: 'bold'
-          }
+          },
+          bgcolor: 'rgba(255,255,255,0.8)',
+          borderpad: 4,
         }
       }
       return null
@@ -142,21 +142,49 @@ function TheStratPage() {
     layout.annotations = annotations
 
     return (
-      <Box key={timeframe} sx={{ mb: 3 }}>
+      <Box key={timeframe} className="chart-container" sx={{ mb: 3 }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            mb: 2, 
+            fontWeight: 700,
+            color: 'text.primary',
+            fontSize: '1rem'
+          }}
+        >
+          {data.ticker} - {timeframe.toUpperCase()}
+        </Typography>
         <Plot
           data={[trace]}
           layout={layout}
-          config={{ responsive: true }}
+          config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%' }}
         />
-        <Box sx={{ mt: 1, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-          <Typography variant="body2">
-            <strong>Pattern Legend:</strong> 
-            <span style={{ color: 'blue', marginLeft: 8 }}>■ 1 = Inside Bar</span>
-            <span style={{ color: 'green', marginLeft: 8 }}>■ 2u = Up Bar</span>
-            <span style={{ color: 'red', marginLeft: 8 }}>■ 2d = Down Bar</span>
-            <span style={{ color: 'purple', marginLeft: 8 }}>■ 3 = Outside Bar</span>
-          </Typography>
+        <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          <Chip 
+            label="1 = Inside Bar" 
+            size="small"
+            className="pattern-badge inside"
+            sx={{ fontWeight: 600 }}
+          />
+          <Chip 
+            label="2u = Up Bar" 
+            size="small"
+            className="pattern-badge up"
+            sx={{ fontWeight: 600 }}
+          />
+          <Chip 
+            label="2d = Down Bar" 
+            size="small"
+            className="pattern-badge down"
+            sx={{ fontWeight: 600 }}
+          />
+          <Chip 
+            label="3 = Outside Bar" 
+            size="small"
+            className="pattern-badge outside"
+            sx={{ fontWeight: 600 }}
+          />
         </Box>
       </Box>
     )
@@ -165,24 +193,35 @@ function TheStratPage() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        minHeight: '100vh',
-        bgcolor: '#f5f5f5'
+        minHeight: 'calc(100vh - 64px)',
+        bgcolor: 'background.default',
+        py: 4
       }}>
-        <Container maxWidth={false} sx={{ 
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          py: 4,
-          px: 2,
-          maxWidth: '1600px',
-          mx: 'auto'
-        }}>
-          <Box sx={{ display: 'flex', flex: 1, gap: 2 }}>
-            {/* Left Panel - Settings */}
-            <Paper sx={{ width: '280px', p: 3, height: 'fit-content' }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', gap: 3 }}>
+            {/* Sidebar */}
+            <Paper 
+              elevation={0}
+              sx={{ 
+                width: '320px', 
+                p: 3, 
+                height: 'fit-content',
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                position: 'sticky',
+                top: 24,
+              }}
+            >
+              <Typography 
+                variant="h6" 
+                gutterBottom 
+                sx={{ 
+                  mb: 3,
+                  fontWeight: 700,
+                  color: 'text.primary',
+                }}
+              >
                 TheStrat Analysis
               </Typography>
 
@@ -192,24 +231,47 @@ function TheStratPage() {
                 onChange={(e) => setTicker(e.target.value)}
                 fullWidth
                 sx={{ mb: 2 }}
+                size="small"
               />
 
               <DatePicker
                 label="Start Date"
                 value={startDate}
                 onChange={setStartDate}
-                slotProps={{ textField: { fullWidth: true, sx: { mb: 2 } } }}
+                slotProps={{ 
+                  textField: { 
+                    fullWidth: true, 
+                    sx: { mb: 2 },
+                    size: 'small'
+                  } 
+                }}
               />
 
               <DatePicker
                 label="End Date"
                 value={endDate}
                 onChange={setEndDate}
-                slotProps={{ textField: { fullWidth: true, sx: { mb: 3 } } }}
+                slotProps={{ 
+                  textField: { 
+                    fullWidth: true, 
+                    sx: { mb: 3 },
+                    size: 'small'
+                  } 
+                }}
               />
 
               <FormControl component="fieldset" sx={{ mb: 3 }}>
-                <FormLabel component="legend" sx={{ mb: 1 }}>Timeframes</FormLabel>
+                <FormLabel 
+                  component="legend" 
+                  sx={{ 
+                    mb: 1.5, 
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    color: 'text.primary'
+                  }}
+                >
+                  Timeframes
+                </FormLabel>
                 <FormGroup>
                   {Object.keys(selectedTimeframes).map(tf => (
                     <FormControlLabel
@@ -219,9 +281,10 @@ function TheStratPage() {
                           checked={selectedTimeframes[tf]}
                           onChange={handleTimeframeChange}
                           name={tf}
+                          size="small"
                         />
                       }
-                      label={tf.toUpperCase()}
+                      label={<Typography sx={{ fontSize: '0.875rem' }}>{tf.toUpperCase()}</Typography>}
                     />
                   ))}
                 </FormGroup>
@@ -233,43 +296,74 @@ function TheStratPage() {
                 disabled={isLoading}
                 fullWidth
                 size="large"
+                className="gradient-button"
+                sx={{
+                  py: 1.5,
+                  fontWeight: 700,
+                  fontSize: '0.9375rem',
+                  textTransform: 'none',
+                }}
               >
                 {isLoading ? 'Analyzing...' : 'Analyze'}
               </Button>
             </Paper>
 
-            {/* Right Panel - Charts */}
-            <Paper sx={{ flex: 1, p: 3, overflow: 'auto' }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-                Multi-Timeframe Charts
-              </Typography>
+            {/* Main Content */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  minHeight: '600px',
+                  p: 3,
+                  borderRadius: 2,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                }}
+              >
+                {isLoading && (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    minHeight: '600px',
+                    gap: 2
+                  }}>
+                    <CircularProgress size={48} />
+                    <Typography color="text.secondary">
+                      Loading market data...
+                    </Typography>
+                  </Box>
+                )}
 
-              {isLoading && (
-                <Typography sx={{ textAlign: 'center', mt: 4 }}>
-                  Loading data...
-                </Typography>
-              )}
+                {error && (
+                  <Alert severity="error" sx={{ borderRadius: 2 }}>
+                    {error}
+                  </Alert>
+                )}
 
-              {error && (
-                <Typography color="error" sx={{ textAlign: 'center', mt: 4 }}>
-                  Error: {error}
-                </Typography>
-              )}
+                {!isLoading && !error && !data && (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    minHeight: '600px'
+                  }}>
+                    <Typography variant="body1" color="text.secondary">
+                      Enter a ticker symbol and click Analyze to view multi-timeframe charts
+                    </Typography>
+                  </Box>
+                )}
 
-              {!isLoading && !error && !data && (
-                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', mt: 4 }}>
-                  Please set parameters and click Analyze to view charts
-                </Typography>
-              )}
-
-              {!isLoading && !error && data && (
-                <Box>
-                  {Object.entries(data.timeframes).map(([tf, tfData]) => 
-                    renderChart(tf, tfData)
-                  )}
-                </Box>
-              )}
-            </Paper>
+                {!isLoading && !error && data && (
+                  <Box>
+                    {Object.entries(data.timeframes).map(([tf, tfData]) => 
+                      renderChart(tf, tfData)
+                    )}
+                  </Box>
+                )}
+              </Paper>
+            </Box>
           </Box>
         </Container>
       </Box>

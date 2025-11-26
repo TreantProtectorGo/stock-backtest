@@ -3,6 +3,8 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
 import BacktestForm from '../components/BacktestForm'
 import ResultsDisplay from '../components/ResultsDisplay'
 import { submitBacktest } from '../services/api'
@@ -16,7 +18,6 @@ function BacktestPage() {
     setIsLoading(true)
     setError(null)
     setBacktestResults(null)
-    console.log("Form Data Submitted: ", formData)
 
     try {
       const results = await submitBacktest(formData)
@@ -30,59 +31,94 @@ function BacktestPage() {
 
   return (
     <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      minHeight: '100vh',
-      bgcolor: '#f5f5f5'
+      minHeight: 'calc(100vh - 64px)',
+      bgcolor: 'background.default',
+      py: 4
     }}>
-      <Container maxWidth={false} sx={{ 
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        py: 4,
-        px: 2,
-        maxWidth: '1400px',
-        mx: 'auto'
-      }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flex: 1,
-          gap: 1
-        }}>
-          {/* Left: Input Form */}
-          <Paper sx={{ 
-            width: '200px',
-            p: 2,
-            height: 'fit-content'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-              Settings
+      <Container maxWidth="xl">
+        <Box sx={{ display: 'flex', gap: 3 }}>
+          {/* Sidebar */}
+          <Paper 
+            elevation={0}
+            sx={{ 
+              width: '320px',
+              height: 'fit-content',
+              p: 3,
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider',
+              position: 'sticky',
+              top: 24,
+            }}
+          >
+            <Typography 
+              variant="h6" 
+              gutterBottom 
+              sx={{ 
+                mb: 3,
+                fontWeight: 700,
+                color: 'text.primary',
+              }}
+            >
+              Backtest Settings
             </Typography>
             <BacktestForm onSubmit={handleBacktestSubmit} isLoading={isLoading} />
           </Paper>
 
-          {/* Right: Results */}
-          <Paper sx={{ 
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'auto'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', p: 2, pb: 1 }}>
-              Results
-            </Typography>
-            {isLoading && <Typography sx={{ p: 2 }}>Loading...</Typography>}
-            {error && <Typography color="error" sx={{ p: 2 }}>Error: {error}</Typography>}
-            
-            {!isLoading && !error && backtestResults && 
-              <ResultsDisplay results={backtestResults} />
-            }
-            {!isLoading && !error && !backtestResults && (
-              <Typography variant="body1" color="textSecondary" sx={{textAlign: 'center', mt: 2, p: 2}}>
-                (Please set parameters and start backtest)
-              </Typography>
-            )}
-          </Paper>
+          {/* Main Content */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Paper 
+              elevation={0}
+              sx={{ 
+                minHeight: '600px',
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                overflow: 'hidden',
+              }}
+            >
+              {isLoading && (
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  minHeight: '600px',
+                  gap: 2
+                }}>
+                  <CircularProgress size={48} />
+                  <Typography color="text.secondary">
+                    Running backtest analysis...
+                  </Typography>
+                </Box>
+              )}
+              
+              {error && (
+                <Box sx={{ p: 3 }}>
+                  <Alert severity="error" sx={{ borderRadius: 2 }}>
+                    {error}
+                  </Alert>
+                </Box>
+              )}
+              
+              {!isLoading && !error && backtestResults && 
+                <ResultsDisplay results={backtestResults} />
+              }
+              
+              {!isLoading && !error && !backtestResults && (
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  minHeight: '600px'
+                }}>
+                  <Typography variant="body1" color="text.secondary">
+                    Configure your portfolio settings and click "Start Backtest" to begin
+                  </Typography>
+                </Box>
+              )}
+            </Paper>
+          </Box>
         </Box>
       </Container>
     </Box>

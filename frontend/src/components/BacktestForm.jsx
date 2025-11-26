@@ -268,9 +268,18 @@ const BacktestForm = ({ onSubmit, isLoading }) => {
         color="primary"
         fullWidth
         disabled={isLoading}
-        sx={{ mt: 2, mb: 2 }}
+        size="large"
+        className="gradient-button"
+        sx={{ 
+          mt: 3, 
+          mb: 2,
+          py: 1.5,
+          fontWeight: 700,
+          fontSize: '0.9375rem',
+          textTransform: 'none',
+        }}
       >
-        {isLoading ? 'Running...' : 'Start Backtest'}
+        {isLoading ? 'Running Analysis...' : 'Start Backtest'}
       </Button>
     </Box>
   );

@@ -3,11 +3,12 @@ import Plot from 'react-plotly.js';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 const formatPercentage = (value) => {
   if (value === null || value === undefined) return 'N/A';
@@ -24,7 +25,7 @@ const formatNumber = (value) => {
   return value.toFixed(2);
 };
 
-// 計算 Sharpe Ratio 的函數
+// Calculate Sharpe Ratio
 const calculateSharpeRatio = (performanceData, riskFreeRate = 0.02) => {
   if (!performanceData || !performanceData.values || performanceData.values.length < 2) {
     return null;
@@ -33,7 +34,6 @@ const calculateSharpeRatio = (performanceData, riskFreeRate = 0.02) => {
   const values = performanceData.values;
   const returns = [];
   
-  // 計算日報酬率
   for (let i = 1; i < values.length; i++) {
     const dailyReturn = (values[i] - values[i-1]) / values[i-1];
     returns.push(dailyReturn);
@@ -41,71 +41,89 @@ const calculateSharpeRatio = (performanceData, riskFreeRate = 0.02) => {
   
   if (returns.length === 0) return null;
   
-  // 計算平均日報酬率
   const meanDailyReturn = returns.reduce((sum, ret) => sum + ret, 0) / returns.length;
-  
-  // 計算報酬率的標準差 (日波動率)
   const variance = returns.reduce((sum, ret) => sum + Math.pow(ret - meanDailyReturn, 2), 0) / returns.length;
   const dailyVolatility = Math.sqrt(variance);
   
   if (dailyVolatility === 0) return null;
   
-  // 將年化無風險利率轉換為日無風險利率
-  const dailyRiskFreeRate = Math.pow(1 + riskFreeRate, 1/252) - 1; // 假設 252 個交易日
-  
-  // 計算 Sharpe Ratio
+  const dailyRiskFreeRate = Math.pow(1 + riskFreeRate, 1/252) - 1;
   const sharpeRatio = (meanDailyReturn - dailyRiskFreeRate) / dailyVolatility * Math.sqrt(252);
   
   return sharpeRatio;
+};
+
+// Stat Card Component
+const StatCard = ({ label, value, isPercentage = false, isCurrency = false, showTrend = false }) => {
+  const numValue = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.-]/g, '')) : value;
+  const isPositive = numValue > 0;
+  const isNegative = numValue < 0;
+  
+  let displayValue = value;
+  if (isCurrency && typeof numValue === 'number') {
+    displayValue = formatCurrency(numValue);
+  } else if (isPercentage && typeof numValue === 'number') {
+    displayValue = formatPercentage(numValue / 100);
+  }
+  
+  return (
+    <Box className="stat-card">
+      <Typography className="stat-card-label">
+        {label}
+      </Typography>
+      <Typography 
+        className={`stat-card-value ${showTrend ? (isPositive ? 'positive' : isNegative ? 'negative' : '') : ''}`}
+        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+      >
+        {showTrend && isPositive && <TrendingUpIcon sx={{ fontSize: '1.5rem' }} />}
+        {showTrend && isNegative && <TrendingDownIcon sx={{ fontSize: '1.5rem' }} />}
+        {displayValue}
+      </Typography>
+    </Box>
+  );
 };
 
 const ResultsDisplay = ({ results }) => {
   const [isLogScale, setIsLogScale] = useState(false);
 
   if (!results) {
-    return <Typography>No backtest results available.</Typography>;
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography color="text.secondary">No backtest results available.</Typography>
+      </Box>
+    );
   }
 
   const { portfolio_performance, benchmark_performance } = results;
 
   const plotData = [];
   let plotLayout = {
-    title: 'Portfolio Value',
     xaxis: { 
-      title: 'Date',
+      title: { text: 'Date', font: { size: 12, color: '#6b7280' } },
+      gridcolor: '#f3f4f6',
+      showline: false,
     },
     yaxis: { 
-      title: 'Value', 
+      title: { text: 'Portfolio Value', font: { size: 12, color: '#6b7280' } },
       autorange: true,
       type: isLogScale ? 'log' : 'linear',
-      tickformat: isLogScale ? '$~s' : '$,.0f',
-      showexponent: 'none',
-      separatethousands: true,
-      gridcolor: '#e0e0e0',
-      tickfont: {
-        size: 11
-      },
-      tickprefix: '',
-      hoverformat: '$,.2f',
-      dtick: isLogScale ? 'D2' : null,
-      tickmode: isLogScale ? 'linear' : 'auto'
+      tickformat: '$,.0f',
+      gridcolor: '#f3f4f6',
+      showline: false,
     },
     autosize: true,
-    margin: { t: 30, r: 10, l: 70, b: 30 },
+    margin: { t: 20, r: 20, l: 60, b: 40 },
     showlegend: true,
     legend: { 
       orientation: 'h',
-      y: -0.12,
+      y: -0.15,
       x: 0.5,
-      xanchor: 'center'
+      xanchor: 'center',
+      font: { size: 11 }
     },
     plot_bgcolor: '#ffffff',
     paper_bgcolor: '#ffffff',
-    grid: {
-      rows: 1,
-      columns: 1,
-      pattern: 'independent'
-    }
+    hovermode: 'x unified',
   };
 
   let firstDate = null;
@@ -118,6 +136,8 @@ const ResultsDisplay = ({ results }) => {
       type: 'scatter',
       mode: 'lines',
       name: 'Portfolio',
+      line: { color: '#2563eb', width: 2.5 },
+      hovertemplate: '%{y:$,.2f}<extra></extra>',
     });
     firstDate = portfolio_performance.dates[0];
     lastDate = portfolio_performance.dates[portfolio_performance.dates.length - 1];
@@ -130,73 +150,93 @@ const ResultsDisplay = ({ results }) => {
       type: 'scatter',
       mode: 'lines',
       name: 'Benchmark',
-      line: { dash: 'dot' }
+      line: { color: '#6b7280', width: 2, dash: 'dot' },
+      hovertemplate: '%{y:$,.2f}<extra></extra>',
     });
-    plotLayout.title = 'Portfolio vs Benchmark Value';
     if (lastDate === null || (benchmark_performance.dates.length > 0 && benchmark_performance.dates[benchmark_performance.dates.length - 1] > lastDate)) {
       lastDate = benchmark_performance.dates[benchmark_performance.dates.length - 1];
     }
     if (firstDate === null && benchmark_performance.dates.length > 0) {
-        firstDate = benchmark_performance.dates[0];
+      firstDate = benchmark_performance.dates[0];
     }
   }
 
-  // 如果有有效的日期範圍，則設定 xaxis.range
   if (firstDate && lastDate) {
     plotLayout.xaxis.range = [firstDate, lastDate];
-    plotLayout.xaxis.autorange = false; // 關閉自動範圍以使用我們的設定
+    plotLayout.xaxis.autorange = false;
   }
   
-  const renderPerformanceCard = (title, performanceData) => {
+  const renderPerformanceStats = (title, performanceData, isPrimary = false) => {
     if (!performanceData) return null;
     
     const calculatedSharpeRatio = calculateSharpeRatio(performanceData);
     const sharpeRatio = performanceData.sharpe_ratio || calculatedSharpeRatio;
+    const finalValue = performanceData.final_value || performanceData.values?.[performanceData.values.length - 1];
     
     return (
-      <Grid item xs={12} sm={benchmark_performance ? 6 : 12}>
-        <Box>
-          <Typography variant="subtitle1" gutterBottom>{title}</Typography>
-          <List dense>
-            <ListItem>
-              <ListItemText 
-                primary="Final Value" 
-                secondary={formatCurrency(performanceData.final_value || performanceData.values?.[performanceData.values.length - 1])} 
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Total Return" secondary={formatPercentage(performanceData.total_return)} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Annualized Return" secondary={formatPercentage(performanceData.annualized_return)} />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary="Maximum Drawdown" secondary={formatPercentage(performanceData.max_drawdown)} />
-            </ListItem>
-            <ListItem>
-              <ListItemText 
-                primary="Sharpe Ratio" 
-                secondary={formatNumber(sharpeRatio)} 
-              />
-            </ListItem>
-          </List>
-        </Box>
-      </Grid>
+      <Box>
+        <Typography 
+          variant="h6" 
+          gutterBottom 
+          sx={{ 
+            mb: 3, 
+            fontWeight: 700,
+            color: isPrimary ? 'primary.main' : 'text.secondary',
+            fontSize: '1rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          {title}
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard 
+              label="Final Value" 
+              value={finalValue}
+              isCurrency={true}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard 
+              label="Total Return" 
+              value={performanceData.total_return * 100}
+              isPercentage={true}
+              showTrend={true}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard 
+              label="Annualized Return" 
+              value={performanceData.annualized_return * 100}
+              isPercentage={true}
+              showTrend={true}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard 
+              label="Maximum Drawdown" 
+              value={performanceData.max_drawdown * 100}
+              isPercentage={true}
+              showTrend={true}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard 
+              label="Sharpe Ratio" 
+              value={formatNumber(sharpeRatio)}
+            />
+          </Grid>
+        </Grid>
+      </Box>
     );
   }
 
   return (
-    <Box sx={{ 
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 1
-    }}>
+    <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 4 }}>
       {plotData.length > 0 && (
-        <Box>
-          <Box sx={{ 
-            height: '500px',
-            position: 'relative'
-          }}>
+        <Box className="chart-container" sx={{ position: 'relative' }}>
+          <Box sx={{ height: '450px' }}>
             <Plot 
               data={plotData} 
               layout={plotLayout}
@@ -207,51 +247,38 @@ const ResultsDisplay = ({ results }) => {
                 displayModeBar: false
               }}
             />
-            <Box sx={{
-              position: 'absolute',
-              bottom: '15px',
-              left: '15px',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={isLogScale}
-                    onChange={(e) => setIsLogScale(e.target.checked)}
-                    color="primary"
-                    size="small"
-                  />
-                }
-                label={
-                  <Typography sx={{ 
-                    fontSize: '13px',
-                    fontWeight: 400,
-                    color: '#2f2f2f',
-                    ml: -0.5
-                  }}>
-                    Log Scale
-                  </Typography>
-                }
-                sx={{
-                  margin: 0,
-                  '& .MuiSwitch-root': {
-                    marginRight: '4px',
-                    transform: 'scale(1)'
-                  }
-                }}
-              />
-            </Box>
+          </Box>
+          <Box sx={{
+            position: 'absolute',
+            bottom: '60px',
+            left: '24px',
+            zIndex: 10,
+          }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isLogScale}
+                  onChange={(e) => setIsLogScale(e.target.checked)}
+                  size="small"
+                />
+              }
+              label={
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'text.secondary' }}>
+                  Log Scale
+                </Typography>
+              }
+            />
           </Box>
         </Box>
       )}
 
-      <Grid container spacing={1} sx={{ flex: 1 }}>
-        {portfolio_performance && renderPerformanceCard('Portfolio', portfolio_performance)}
-        {benchmark_performance && renderPerformanceCard('Benchmark', benchmark_performance)}
-      </Grid>
+      {portfolio_performance && renderPerformanceStats('Portfolio Performance', portfolio_performance, true)}
       
-      {/* TODO: (初期可選) 個別資產表現列表 */}
+      {benchmark_performance && (
+        <Box sx={{ mt: 2 }}>
+          {renderPerformanceStats('Benchmark Performance', benchmark_performance)}
+        </Box>
+      )}
     </Box>
   );
 };
